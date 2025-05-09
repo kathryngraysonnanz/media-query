@@ -1,13 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Quagga from "quagga";
 
 const BarcodeScanner = ({ onScan }) => {
   const scannerRef = useRef(null);
-  const [bookInfo, setBookInfo] = useState(null);
 
-  // Fetch book info based on ISBN
   const getBookInfo = async (isbn) => {
     const url = `https://openlibrary.org/api/books?bibkeys=ISBN:${isbn}&format=json&jscmd=data`;
     try {
@@ -27,9 +25,11 @@ const BarcodeScanner = ({ onScan }) => {
         onScan(bookDetails);
       } else {
         console.error("Book not found");
+        onScan({error: "Book not found"})
       }
     } catch (error) {
       console.error("Error fetching book info:", error);
+      onScan({error: "Error fetching book info"})
     }
   };
 
@@ -71,7 +71,6 @@ const BarcodeScanner = ({ onScan }) => {
       const isbn = result.codeResult.code;
       console.log("Detected ISBN: ", isbn);
       Quagga.stop();
-       // Pass the scanned ISBN to the parent component
       getBookInfo(isbn); // Fetch book info
     });
 
@@ -83,16 +82,6 @@ const BarcodeScanner = ({ onScan }) => {
   return (
     <div>
       <div ref={scannerRef} style={{ width: "100%", height: "300px" }} />
-      {console.log("info:", bookInfo)}
-      {bookInfo && (
-        <div>
-          <h2>{bookInfo.title}</h2>
-          <p><strong>Authors:</strong> {bookInfo.authors}</p>
-          <p><strong>Published:</strong> {bookInfo.publish_date}</p>
-          {bookInfo.cover && <img src={bookInfo.cover} alt={bookInfo.title} />}
-          <p>{bookInfo.description}</p>
-        </div>
-      )}
     </div>
   );
 };
