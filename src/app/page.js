@@ -1,14 +1,17 @@
 'use client'
 
-import { TextBox } from "@progress/kendo-react-inputs";
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+import styles from "./page.module.scss";
 
-import styles from "./page.module.css";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "../../lib/firebase";
+import { saveMediaToFirestore } from "../../lib/firestore";
 
 import { useState } from "react";
+
 import BarcodeScanner from "./scanner";
+
 import { Button } from "@progress/kendo-react-buttons";
+import { Card } from "@progress/kendo-react-layout";
 
 
 export default function Home() {
@@ -25,6 +28,21 @@ export default function Home() {
       setMediaInfo(null);
       setScannerOpen(false);
     }
+
+    function formatMedia(mediaInfo){
+      let savedMedia = {
+        "type": "book", 
+        "title": mediaInfo.title,
+        "author": mediaInfo.authors, 
+        "isbn": mediaInfo.isbn,
+        "published": mediaInfo.publish_date, 
+        "added": new Date(),
+        "loaned": false
+      }
+
+      saveMediaToFirestore(savedMedia);
+    }
+
 
   return (
     <div>
@@ -54,6 +72,9 @@ export default function Home() {
           <div className={styles.results}>
             <h2>Scan Results</h2>
             <br/>
+            {mediaInfo.duplicate && 
+              <Card type="warning"> Note: this title is already in your library.</Card>
+            }
             <img src={mediaInfo.cover} className={styles.cover}/>
             <p><b>ISBN:</b> {mediaInfo.isbn}</p>
             <p><b>Title:</b> <i>{mediaInfo.title}</i></p>
@@ -62,7 +83,7 @@ export default function Home() {
 
             <Button onClick={(e) => resetScanner()}>Rescan</Button>
             <Button>Edit Information</Button>
-            <Button>Add to Library</Button>
+            <Button disabled={mediaInfo.duplicate} onClick={(e) => formatMedia(mediaInfo)}>Add to Library</Button>
             <Button onClick={(e) => cancelScan()}>Cancel</Button>
           
             </div>

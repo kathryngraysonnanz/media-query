@@ -3,6 +3,8 @@
 import { useEffect, useRef } from "react";
 import Quagga from "quagga";
 
+import { checkMediaExists } from "../../lib/firestore";
+
 const BarcodeScanner = ({ onScan }) => {
   const scannerRef = useRef(null);
 
@@ -11,9 +13,11 @@ const BarcodeScanner = ({ onScan }) => {
     try {
       const response = await fetch(url);
       const data = await response.json();
+      const isDuplicate = await checkMediaExists(isbn);
 
       if (data[`ISBN:${isbn}`]) {
         const book = data[`ISBN:${isbn}`];
+      
         const bookDetails = {
           isbn: isbn, 
           title: book.title,
@@ -21,11 +25,12 @@ const BarcodeScanner = ({ onScan }) => {
           publish_date: book.publish_date || "Unknown",
           cover: book.cover ? book.cover.large : null,
           description: book.notes || "No description available",
+          duplicate: isDuplicate,
         };
         onScan(bookDetails);
       } else {
-        console.error("Book not found");
-        onScan({error: "Book not found"})
+        console.error("Book not found. ISBN: " + isbn);
+        onScan({error: "Book not found. ISBN: " + isbn})
       }
     } catch (error) {
       console.error("Error fetching book info:", error);
@@ -39,25 +44,25 @@ const BarcodeScanner = ({ onScan }) => {
     Quagga.init({
       inputStream: {
         type: "LiveStream",
-        target: scannerRef.current, // Target div for camera feed
+        target: scannerRef.current, 
         constraints: {
-          facingMode: "environment", // Use rear camera
+          facingMode: "environment",
         },
       },
       locator: {
-        patchSize: "large",  // Increased patch size for better detection
-        halfSample: true,    // Reduces the amount of data for faster scanning
+        patchSize: "large",  
+        halfSample: true,   
       },
       decoder: {
         readers: [
-          "ean_reader",          // ISBN-13 / EAN-13
+          "ean_reader",  // ISBN-13 / EAN-13
         ],
       },
       locate: true,
       debug: {
-        drawBoundingBox: true,  // Draw bounding box around detected barcodes
-        showFrequency: true,    // Show how often a barcode is detected
-        drawScanline: true,     // Show scanning line
+        drawBoundingBox: true,  
+        showFrequency: true,    
+        drawScanline: true,   
       }
     }, (err) => {
       if (err) {
@@ -71,7 +76,7 @@ const BarcodeScanner = ({ onScan }) => {
       const isbn = result.codeResult.code;
       console.log("Detected ISBN: ", isbn);
       Quagga.stop();
-      getBookInfo(isbn); // Fetch book info
+      getBookInfo(isbn);
     });
 
     return () => {

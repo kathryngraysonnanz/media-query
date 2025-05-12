@@ -12,11 +12,14 @@
     "@ericblade/quagga2": "^1.8.4",
     "@progress/kendo-react-buttons": "^10.2.0",
     "@progress/kendo-react-inputs": "^10.2.0",
+    "@progress/kendo-react-layout": "^10.2.0",
+    "@progress/kendo-theme-default": "^11.0.0",
     "firebase": "^11.7.1",
     "html5-qrcode": "^2.3.8",
     "next": "15.3.2",
     "quagga": "^0.12.1",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "sass": "^1.88.0"
   }
 }
