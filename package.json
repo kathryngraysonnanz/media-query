@@ -11,6 +11,7 @@
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
     "@progress/kendo-react-buttons": "^10.2.0",
+    "@progress/kendo-react-dialogs": "^10.2.0",
     "@progress/kendo-react-inputs": "^10.2.0",
     "@progress/kendo-react-layout": "^10.2.0",
     "@progress/kendo-theme-default": "^11.0.0",
