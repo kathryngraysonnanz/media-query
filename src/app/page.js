@@ -9,6 +9,7 @@ import { saveMediaToFirestore } from "../../lib/firestore";
 import { useState } from "react";
 
 import BarcodeScanner from "./scanner";
+import Header from "./header";
 
 import { Button } from "@progress/kendo-react-buttons";
 import { Card } from "@progress/kendo-react-layout";
@@ -46,6 +47,7 @@ export default function Home() {
 
   return (
     <div>
+      <Header></Header>
       <main> 
         <h1>The Grayson-Nanz Media Library</h1>
         <div style={{ padding: "1rem" }}>

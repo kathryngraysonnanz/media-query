@@ -1,46 +1,45 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from "react";
-import { collection, getDocs } from "firebase/firestore";
-import { db } from "../../../lib/firebase";
+import { useState, useEffect } from "react";
+import { Input } from "@progress/kendo-react-inputs";
+import { searchMedia } from "../../../lib/firestore";
+import Header from "../header";
 
-export default function Library() {
-  const [mediaItems, setMediaItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+const LibraryPage = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
-    const fetchMedia = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "media"));
-        const mediaData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setMediaItems(mediaData);
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching media:", error);
-        setLoading(false);
-      }
+    const fetch = async () => {
+      const media = await searchMedia(searchTerm);
+      setResults(media);
     };
 
-    fetchMedia(); // auto-load on mount
-  }, []);
-
-  if (loading) return <p>Loading media...</p>;
+    if (searchTerm.trim().length > 1) {
+      fetch();
+    } else {
+      setResults([]);
+    }
+  }, [searchTerm]);
 
   return (
     <div>
-      <h2>Scanned Media</h2>
-      {mediaItems.length === 0 ? (
-        <p>No media found.</p>
+      <Header/>
+      <h2>Search Your Library</h2>
+      <Input
+        placeholder="Search by title..."
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.value)}
+        style={{ width: "100%", marginBottom: "1rem" }}
+      />
+
+      {results.length === 0 && searchTerm.trim().length > 1 ? (
+        <p>No results found.</p>
       ) : (
         <ul>
-          {mediaItems.map((item) => (
-            <li key={item.id}>
-              <strong>{item.title}</strong>
-              {item.authors && ` by ${item.authors}`}
-              {item.type && ` (${item.type})`}
+          {results.map((media) => (
+            <li key={media.id}>
+              <strong>{media.title}</strong> by {media.author}
             </li>
           ))}
         </ul>
@@ -48,3 +47,5 @@ export default function Library() {
     </div>
   );
 };
+
+export default LibraryPage;
