@@ -2,11 +2,14 @@
   "name": "media-query",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://kathryngraysonnanz.github.io/media-query",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "export": "next build && next export",
+    "deploy": "npm run export && gh-pages -d out"
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
@@ -28,5 +31,8 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "sass": "^1.88.0"
+  },
+  "devDependencies": {
+    "gh-pages": "^6.3.0"
   }
 }
