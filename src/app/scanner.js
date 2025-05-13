@@ -57,7 +57,8 @@ export const BarcodeScanner = ({ onScan }) => {
       },
       decoder: {
         readers: [
-          "ean_reader",  // ISBN-13 / EAN-13
+          "ean_reader", 
+          "upc_reader"
         ],
       },
       locate: true,

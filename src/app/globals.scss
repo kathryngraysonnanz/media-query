@@ -37,6 +37,19 @@ a {
   text-decoration: none;
 }
 
+main {
+  padding: 10px;
+  margin: 10px;
+}
+
+h1 {
+  font-size: 1.3rem;
+}
+
+h2 {
+  font-size: 1.2rem;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
