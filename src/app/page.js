@@ -14,7 +14,7 @@ import { Dialog, DialogActionsBar } from "@progress/kendo-react-dialogs";
 import { Input } from "@progress/kendo-react-inputs";
 import { FieldWrapper } from "@progress/kendo-react-form";
 import { Fade } from "@progress/kendo-react-animation";
-import { Notification } from "@progress/kendo-react-notification";
+import { Notification, NotificationGroup } from "@progress/kendo-react-notification";
 
 
 export default function Home() {
@@ -34,7 +34,8 @@ export default function Home() {
       published: "", 
       title: "",
       type: "book", 
-      cover: ""
+      cover: "",
+      tags: []
     });
 
     function resetScanner() {
@@ -56,7 +57,8 @@ export default function Home() {
         published: "", 
         title: "",
         type: "book", 
-        cover: ""
+        cover: "",
+        tags: [] 
       })
     }
 
@@ -69,11 +71,13 @@ export default function Home() {
         "isbn": mediaInfo.isbn,
         "published": mediaInfo.publish_date, 
         "added": new Date(),
-        "loaned": false
+        "loaned": false,
+        "tags": mediaInfo.tags
       }
 
       saveMediaToFirestore(savedMedia);
       setSavedSuccess(true); 
+      setTimeout(() => setSavedSuccess(false), 3000);
       cancelScan(); 
     }
 
@@ -115,19 +119,7 @@ export default function Home() {
 
       <main> 
         <h2>Add media to library: </h2>
-         <Fade>
-          {savedSuccess && 
-            <Notification 
-              type={{
-                  style: 'success',
-                  icon: true
-                }} 
-              closable={true} 
-              onClose={() => setSavedSuccess(false)}>
-              <p>Your data has been saved.</p>
-            </Notification>
-            }
-        </Fade>
+         
 
           {!scannerOpen && 
           <div className={styles.buttonGroup}>
@@ -188,7 +180,7 @@ export default function Home() {
               }
               {!mediaInfo.error && 
                 <Dialog title={'Search Results'} className={styles.dialog}>
-                  {console.log(mediaInfo)}
+                  {console.log('info', mediaInfo)}
                   {mediaInfo.duplicate && 
                     <Card type="warning"> This title is already in your library.</Card>
                   }
@@ -207,6 +199,22 @@ export default function Home() {
           }
         
       </main>
+      <Fade>
+          {savedSuccess && 
+           <NotificationGroup className={styles.position}>
+              <Notification 
+                className={styles.notification}
+                type={{
+                    style: 'success',
+                    icon: true
+                  }} 
+                closable={true} 
+                onClose={() => setSavedSuccess(false)}>
+                <p>Your data has been saved.</p>
+              </Notification>
+            </NotificationGroup>
+            }
+        </Fade>
     </div>
   );
 }

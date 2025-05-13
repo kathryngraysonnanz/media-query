@@ -13,7 +13,7 @@ export default function Header() {
         <AppBarSection>
             <a href="/">Add</a>
             <a href="/library">Search</a>
-            <a href="/library">Browse</a>
+            <a href="/browse">Browse</a>
         </AppBarSection>
     </AppBar>
     )

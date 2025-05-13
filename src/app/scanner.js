@@ -17,7 +17,7 @@ export const getBookInfo = async (isbn) => {
 
       let searchedISBN = book.identifiers.isbn_10[0]
       const isDuplicate = await checkMediaExists(searchedISBN);
-      console.log('book', book)
+      let tags = book.subjects.map(item => item.name);
 
       return {
         isbn: searchedISBN,
@@ -27,6 +27,7 @@ export const getBookInfo = async (isbn) => {
         cover: book.cover ? book.cover.large : null,
         description: book.notes || "No description available",
         duplicate: isDuplicate,
+        tags: tags
       };
     } else {
       return { error: `Book not found. ISBN: ${isbn}` };

@@ -2,15 +2,17 @@
 
 import { useState, useEffect } from "react";
 import { Input } from "@progress/kendo-react-inputs";
-import { searchMedia, updateMediaLoanInfo } from "../../../lib/firestore";
+import { searchMedia, updateMediaLoanInfo, returnMediaLoan } from "../../../lib/firestore";
 import Header from "../header/header";
-import { DatePicker } from "@progress/kendo-react-dateinputs";
 
 import styles from './library.module.scss'
 
 import { Dialog, DialogActionsBar } from "@progress/kendo-react-dialogs";
 import { Button } from "@progress/kendo-react-buttons";
 import { Card } from "@progress/kendo-react-layout";
+import { Notification, NotificationGroup } from "@progress/kendo-react-notification";
+import { DatePicker } from "@progress/kendo-react-dateinputs";
+import { Fade } from "@progress/kendo-react-animation";
 
 const LibraryPage = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -20,7 +22,8 @@ const LibraryPage = () => {
   const [loanDialogOpen, setLoanDialogOpen] = useState(false);
   const [name, setName] = useState("");
   const [date, setDate] = useState(new Date());
-  const [daysOut, setDaysOut] = useState()
+  const [daysOut, setDaysOut] = useState();
+  const [success, setSuccess] = useState(false)
 
   useEffect(() => {
     const fetch = async () => {
@@ -58,8 +61,19 @@ const LibraryPage = () => {
     clearSelection()
     setSearchTerm("");
     setResults([]); 
-    //TO-DO: success notification 
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 3000);
   };
+
+  const returnLoan = async () => {
+    await returnMediaLoan(selected.id); 
+    setLoanDialogOpen(false);
+    clearSelection()
+    setSearchTerm("");
+    setResults([]); 
+    setSuccess(true);
+    setTimeout(() => setSuccess(false), 3000);
+  }
 
   function daysSince(loanDate) {
     const today = new Date();
@@ -77,8 +91,9 @@ const LibraryPage = () => {
   return (
     <>
       <Header/>
+     
       <main>
-      <h2>Search Your Library</h2>
+      <h2>Search By Title / Author / Tag</h2>
       <Input
         placeholder="Search by title..."
         value={searchTerm}
@@ -105,6 +120,14 @@ const LibraryPage = () => {
           <p style={{textTransform: 'capitalize'}}><b>Title:</b> <i>{selected.title}</i></p>
           <p><b>Author(s):</b> {selected.author}</p>
           <p><b>Publish Date:</b> {selected.published}</p>
+          <p><b>Tags:</b></p>
+          <div className={styles.tagContainer}>
+            {selected.tags && selected.tags.map(tag => {
+                return (
+                    <Card className={styles.tag}>{tag}</Card>
+                )
+              })}
+            </div>
           {selected.loaned && 
             <Card type="warning">
               <p>Loaned to {selected.loaned.name} {daysOut} days ago.</p>
@@ -113,11 +136,10 @@ const LibraryPage = () => {
           {console.log(selected)}
           <DialogActionsBar>
               {!selected.loaned && 
-                <Button onClick={(e) => setLoanDialogOpen(true)}>Set as Loaned</Button>
+                <Button onClick={(e) => setLoanDialogOpen(true)}>Loan Media</Button>
               }
               {selected.loaned && 
-              //TO-DO: create return function 
-                <Button>Set as Returned</Button>
+                <Button onClick={(e) => returnLoan()}>Return Loan</Button>
               }
               <Button onClick={(e) => clearSelection()}>Close</Button>
           </DialogActionsBar>
@@ -144,6 +166,23 @@ const LibraryPage = () => {
           </DialogActionsBar>
         </Dialog>
       }
+
+       <Fade enter={true} exit={true}>
+          {success && 
+            <NotificationGroup className={styles.position}>
+              <Notification 
+                className={styles.notification}
+                type={{
+                    style: 'success',
+                    icon: true
+                  }} 
+                closable={true} 
+                onClose={() => setSuccess(false)}>
+                <p>Your loan data has been updated.</p>
+              </Notification>
+            </NotificationGroup>
+            }
+        </Fade>
 
       </main>
     </>

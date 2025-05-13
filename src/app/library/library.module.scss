@@ -14,5 +14,32 @@
 
 .cover {
   max-width: 150px;
-  margin: 0 50px 10px;
+  margin: auto;
+}
+
+.position {
+    top: 0;
+    width: 100%;
+}
+
+.notification {
+    padding: 10px 25px;
+
+    p {
+        font-size: 14px;
+    }
+}
+
+.tagContainer {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 150px;
+    width: 100%;
+    max-width: 400px;
+    overflow: scroll;    
+}
+
+.tag {
+    padding: 3px 5px;
+    margin: 3px;
 }
