@@ -49,6 +49,8 @@ export default function Home() {
       setIsbnSearchOpen(false);
       setManualISBN(null);
       setManualAddOpen(false);
+      setError("")
+      setSavedSuccess(false);
       setFormData({
         added: new Date(),
         author: "",
@@ -62,6 +64,12 @@ export default function Home() {
       })
     }
 
+    function extractYear(dateString) {
+      if (!dateString) return "";
+      const match = dateString.match(/\b\d{4}\b/); // Matches a 4-digit year
+      return match ? match[0] : "";
+    }
+
     function formatMedia(mediaInfo){
       let savedMedia = {
         "type": "book", 
@@ -69,16 +77,16 @@ export default function Home() {
         "title": mediaInfo.title,
         "author": mediaInfo.authors, 
         "isbn": mediaInfo.isbn,
-        "published": mediaInfo.publish_date, 
+        "published": extractYear(mediaInfo.publish_date), 
         "added": new Date(),
         "loaned": false,
         "tags": mediaInfo.tags
       }
-
+      
       saveMediaToFirestore(savedMedia);
       setSavedSuccess(true); 
-      setTimeout(() => setSavedSuccess(false), 3000);
       cancelScan(); 
+      setTimeout(() => setSavedSuccess(false), 3000);
     }
 
     const manualISBNSearch = async () => {
@@ -153,7 +161,7 @@ export default function Home() {
               <Card type="warning">Note that manually added media is not checked for duplication in the database. <br/> <b>'Scan Barcode' or 'Search by ISBN' input methods are recommended whenever possible.</b></Card>
                 <Input label="Title" value={formData.title} onChange={handleChange("title")} />
                 <Input label="Author(s)" value={formData.author} onChange={handleChange("author")} />
-                <Input label="Publish Date (optional)" value={formData.published} onChange={handleChange("published")} />
+                <Input label="Publish Year (optional)" value={formData.published} onChange={handleChange("published")} />
                 <Input label="ISBN (optional)" value={formData.isbn} onChange={handleChange("isbn")} />
               <DialogActionsBar>
                 <Button themeColor={'primary'} onClick={handleSave}>Add to Library</Button>
@@ -180,7 +188,6 @@ export default function Home() {
               }
               {!mediaInfo.error && 
                 <Dialog title={'Search Results'} className={styles.dialog}>
-                  {console.log('info', mediaInfo)}
                   {mediaInfo.duplicate && 
                     <Card type="warning"> This title is already in your library.</Card>
                   }
@@ -188,7 +195,7 @@ export default function Home() {
                   <p><b>ISBN:</b> {mediaInfo.isbn}</p>
                   <p style={{textTransform: 'capitalize'}}><b>Title:</b> <i>{mediaInfo.title}</i></p>
                   <p><b>Author(s):</b> {mediaInfo.authors}</p>
-                  <p><b>Publish Date:</b> {mediaInfo.publish_date}</p>
+                  <p><b>Published:</b> {mediaInfo.publish_date}</p>
                   <DialogActionsBar>
                       <Button themeColor={'primary'} disabled={mediaInfo.duplicate} onClick={(e) => formatMedia(mediaInfo)}>Add to Library</Button>
                       <Button onClick={(e) => cancelScan()}>Close</Button>

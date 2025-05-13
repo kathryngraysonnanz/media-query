@@ -15,9 +15,12 @@ export const getBookInfo = async (isbn) => {
     if (data[`ISBN:${isbn}`]) {
       const book = data[`ISBN:${isbn}`];
 
-      let searchedISBN = book.identifiers.isbn_10[0]
+      const searchedISBN =
+        book.identifiers?.isbn_10?.[0] ||
+        book.identifiers?.isbn_13?.[0] ||
+        isbn;
       const isDuplicate = await checkMediaExists(searchedISBN);
-      let tags = book.subjects.map(item => item.name);
+      let tags = book.subjects ? book.subjects.map(item => item.name) : [];
 
       return {
         isbn: searchedISBN,
