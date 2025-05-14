@@ -2,11 +2,11 @@
 
 const nextConfig = {
   output: 'export',
+  basePath: '/media-query', 
+  assetPrefix: '/media-query/', 
   images: {
     unoptimized: true,
   },
-  basePath: '/media-query', 
-  assetPrefix: '/media-query/', 
 };
 
 export default nextConfig;
