@@ -4,12 +4,13 @@
   "private": true,
   "homepage": "https://kathryngraysonnanz.github.io/media-query",
   "scripts": {
+    "static": "next build && next export && touch ./out/.nojekyll && echo 'https://kathryngraysonnanz.github.io/media-query' > ./out/CNAME",
     "dev": "next dev --turbopack",
-      "build": "next build && next export",
-      "deploy": "gh-pages -d out",
-      "start": "next start",
-      "lint": "next lint",
-      "export": "next build && next export"
+    "build": "next build && next export",
+    "deploy": "gh-pages -d out --nojekyll --cname https://kathryngraysonnanz.github.io/media-query",
+    "start": "next start",
+    "lint": "next lint",
+    "export": "next build && next export"
   },
   "dependencies": {
     "@ericblade/quagga2": "^1.8.4",
